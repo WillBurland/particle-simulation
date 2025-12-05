@@ -1,3 +1,6 @@
 # Particle Simulation
 
-README todo
+## Requirements
+- `sfml` - version 3
+- `imgui`
+- `imgui-sfml`

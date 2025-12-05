@@ -15,7 +15,7 @@ const int GRID_HEIGHT = HEIGHT / SIM_SCALE;
 static bool firstFrame = true;
 const float uiPadding = 10.0f;
 
-static int selectedIndex = 1;
+static int selectedElement = 1;
 
 sf::RenderWindow createWindow() {
 	sf::VideoMode mode({static_cast<unsigned int>(SIM_WIDTH + UI_WIDTH), static_cast<unsigned int>(HEIGHT)});
@@ -58,11 +58,6 @@ void handleInput(Grid& grid, sf::Vector2i& prevMouse, const float colour[3], sf:
 	if (right) {
 		newColour = elements[0].colour;
 	} else {
-		sf::Color current = grid.getCell(gridX, gridY);
-		if (current != elements[0].colour) {
-			prevMouse = {gridX, gridY};
-			return;
-		}
 		newColour = sf::Color(
 			static_cast<std::uint8_t>(colour[0] * 255),
 			static_cast<std::uint8_t>(colour[1] * 255),
@@ -84,9 +79,9 @@ int main() {
 		return 1;
 
 	float colour[3] = {
-		elements[selectedIndex].colour.r / 255.f,
-		elements[selectedIndex].colour.g / 255.f,
-		elements[selectedIndex].colour.b / 255.f
+		elements[selectedElement].colour.r / 255.f,
+		elements[selectedElement].colour.g / 255.f,
+		elements[selectedElement].colour.b / 255.f
 	};
 	Grid grid(GRID_WIDTH, GRID_HEIGHT, SIM_SCALE, UI_WIDTH);
 	sf::Vector2i prevMouse(-1, -1);
@@ -116,17 +111,17 @@ int main() {
 		}
 
 		ImGui::Begin("Settings", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
-		if (ImGui::BeginCombo("Element", elements[selectedIndex].name.c_str())) {
+		if (ImGui::BeginCombo("Element", elements[selectedElement].name.c_str())) {
 			int index = 0;
 			for (auto& element : elements) {
-				bool is_selected = (selectedIndex == index);
-				if (ImGui::Selectable(element.name.c_str(), is_selected)) {
-					selectedIndex = index;
+				bool isSelected = (selectedElement == index);
+				if (ImGui::Selectable(element.name.c_str(), isSelected)) {
+					selectedElement = index;
 					colour[0] = element.colour.r / 255.f;
 					colour[1] = element.colour.g / 255.f;
 					colour[2] = element.colour.b / 255.f;
 				}
-				if (is_selected)
+				if (isSelected)
 					ImGui::SetItemDefaultFocus();
 				index++;
 			}

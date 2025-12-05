@@ -1,25 +1,31 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -I./include -I./include/imgui
+CXXFLAGS = -std=c++17 -Wall -Wextra -Isrc -I./include
 
 LIBS = \
-    -L./lib \
-    -lImGui-SFML \
-    -lsfml-graphics \
-    -lsfml-window \
-    -lsfml-system \
-    -lGL \
-    -lGLEW
+	-L./lib \
+	-lImGui-SFML \
+	-lsfml-graphics \
+	-lsfml-window \
+	-lsfml-system \
+	-lGL \
+	-lGLEW
 
-SRC = main.cpp
-TARGET = particle-sim
+SRC = $(wildcard src/*.cpp)
+OBJ = $(patsubst src/%.cpp,build/%.o,$(SRC))
+TARGET = build/particle-sim
 
 all: $(TARGET)
 
-$(TARGET): $(SRC)
-	$(CXX) $(CXXFLAGS) $(SRC) -o $(TARGET) $(LIBS)
+$(TARGET): $(OBJ)
+	@mkdir -p build
+	$(CXX) $(CXXFLAGS) $(OBJ) -o $(TARGET) $(LIBS)
+
+build/%.o: src/%.cpp
+	@mkdir -p build
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(TARGET)
+	rm -rf build/*
 
 run: $(TARGET)
 	./$(TARGET)

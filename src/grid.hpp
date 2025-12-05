@@ -17,18 +17,15 @@ class Grid {
 			window.draw(vertices);
 		}
 
-		sf::Color getCell(int x, int y) {
-			if (x < 0 || x >= width || y < 0 || y >= height)
-				return elements[0].colour;
-			return cells[y * width + x];
-		}
-
 		void setCell(int x, int y, const sf::Color& color) {
 			if (x < 0 || x >= width || y < 0 || y >= height)
 				return;
 
 			int idx = y * width + x;
-			if (cells[idx] == color)
+			bool currentIsBlack = (cells[idx] == elements[0].colour);
+			bool newIsBlack = (color == elements[0].colour);
+
+			if (!currentIsBlack && !newIsBlack)
 				return;
 
 			cells[idx] = color;
