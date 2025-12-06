@@ -12,17 +12,23 @@ LIBS = \
 
 SRC = $(wildcard src/*.cpp)
 OBJ = $(patsubst src/%.cpp,build/%.o,$(SRC))
+DEPS = $(OBJ:.o=.d)
 TARGET = build/particle-sim
+
+OBJDIR = build
 
 all: $(TARGET)
 
 $(TARGET): $(OBJ)
-	@mkdir -p build
 	$(CXX) $(CXXFLAGS) $(OBJ) -o $(TARGET) $(LIBS)
 
-build/%.o: src/%.cpp
-	@mkdir -p build
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+$(OBJDIR)/%.o: src/%.cpp | $(OBJDIR)
+	$(CXX) $(CXXFLAGS) -MMD -MF $(patsubst %.o,%.d,$@) -c $< -o $@
+
+$(OBJDIR):
+	mkdir -p $(OBJDIR)
+
+-include $(DEPS)
 
 clean:
 	rm -rf build/*

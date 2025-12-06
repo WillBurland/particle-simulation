@@ -22,10 +22,7 @@ class Grid {
 				return;
 
 			int idx = y * width + x;
-			bool currentIsBlack = (cells[idx] == elements[0].colour);
-			bool newIsBlack = (color == elements[0].colour);
-
-			if (!currentIsBlack && !newIsBlack)
+			if (cells[idx] != Elements::VOID.colour && color != Elements::VOID.colour)
 				return;
 
 			cells[idx] = color;
