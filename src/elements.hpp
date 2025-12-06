@@ -1,3 +1,7 @@
+#pragma once
+
+#include <SFML/Graphics.hpp>
+
 struct Element {
 	int id;
 	std::string name;

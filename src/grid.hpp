@@ -1,5 +1,4 @@
-#include <SFML/Graphics.hpp>
-#include <vector>
+#pragma once
 
 class Grid {
 	public:
