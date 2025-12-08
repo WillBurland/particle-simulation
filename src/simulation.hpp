@@ -1,15 +1,20 @@
 #pragma once
 
+#include <array>
+#include <vector>
+#include <utility>
+
+struct Cell;
+struct Grid;
+struct Element;
+struct Elements;
+
 namespace Simulation {
-	void step(Grid& grid) {
-		for (int i = grid.height - 2; i >= 0; i--) {
-			for (int j = 0; j < grid.width; j++) {
-				Cell current = grid.getCell(j, i);
-				Cell below = grid.getCell(j, i + 1);
-				if (below.element.density < current.element.density) {
-					grid.swapCells(j, i, j, i + 1);
-				}
-			}
-		}
-	}
+	struct MoveOptions {
+		int priorites[3][3]{};
+	};
+
+	MoveOptions evaluateMoves(const Cell& current, const std::array<std::array<Cell*, 3>, 3>& n);
+	bool pickHighestPriorityMove(const MoveOptions& m, int& outDx, int& outDy);
+	void step(Grid& grid);
 }

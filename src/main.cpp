@@ -1,7 +1,12 @@
-#include "elements.hpp"
+#include "config.hpp"
+#include "element.hpp"
 #include "grid.hpp"
 #include "simulation.hpp"
 #include "utility.hpp"
+
+#include <imgui.h>
+#include <imgui-SFML.h>
+#include <SFML/Graphics.hpp>
 
 int main() {
 	sf::RenderWindow window = Utility::createWindow();
@@ -13,7 +18,7 @@ int main() {
 	Element selectedElement = Elements::SAND;
 
 	float speedAccumulator = 0.0f;
-	float simSpeed = 0.5f;
+	float simSpeed = 1.0f;
 	bool isPaused = false;
 
 	while (window.isOpen()) {
