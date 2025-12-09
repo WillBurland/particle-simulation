@@ -1,6 +1,4 @@
 .vscode
-include
-lib
 build
 
 imgui.ini
