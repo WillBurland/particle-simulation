@@ -12,13 +12,14 @@ width(width), height(height), scale(scale), uiOffset(uiOffset), dirty(true) {
 	cells.resize(width * height, Cell());
 	vertices.setPrimitiveType(sf::PrimitiveType::Triangles);
 	vertices.resize(width * height * 6);
-	rebuildVertices();
+	rebuildVertices(0.0f);
 }
 
-void Grid::draw(sf::RenderWindow& window) {
-	if (dirty)
-		rebuildVertices();
+void Grid::draw(sf::RenderWindow& window, float tempBlend) {
+	if (dirty || tempBlend != oldTempOpacity)
+		rebuildVertices(tempBlend);
 	window.draw(vertices);
+	oldTempOpacity = tempBlend;
 }
 
 void Grid::clear() {
@@ -118,7 +119,53 @@ void Grid::drawLine(int x0, int y0, int x1, int y1, const Element& element) {
 	}
 }
 
-void Grid::rebuildVertices() {
+sf::Color temperatureColour(float value) {
+    value = std::clamp(value, 0.0f, 1000.0f);
+    float t = value / 1000.0f;
+
+	struct ColourStop {
+		float position;
+		sf::Color colour;
+	};
+    static const std::vector<ColourStop> stops = {
+        {0.0f, sf::Color(  0,   0, 128)},
+        {0.1f, sf::Color(  0,   0, 255)},
+        {0.2f, sf::Color(  0, 128, 255)},
+        {0.3f, sf::Color(  0, 255, 255)},
+        {0.4f, sf::Color(  0, 255, 128)},
+        {0.5f, sf::Color(  0, 255,   0)},
+        {0.6f, sf::Color(128, 255,   0)},
+        {0.7f, sf::Color(255, 255,   0)},
+        {0.8f, sf::Color(255, 128,   0)},
+        {0.9f, sf::Color(255,   0,   0)},
+        {1.0f, sf::Color(128,   0,   0)}
+    };
+
+    for (size_t i = 0; i < stops.size() - 1; ++i) {
+        if (t >= stops[i].position && t <= stops[i + 1].position) {
+            float localT = (t - stops[i].position) / (stops[i + 1].position - stops[i].position);
+            return sf::Color(
+				static_cast<uint8_t>(stops[i].colour.r + localT * (stops[i + 1].colour.r - stops[i].colour.r)),
+				static_cast<uint8_t>(stops[i].colour.g + localT * (stops[i + 1].colour.g - stops[i].colour.g)),
+				static_cast<uint8_t>(stops[i].colour.b + localT * (stops[i + 1].colour.b - stops[i].colour.b))
+			);
+        }
+    }
+
+    return stops.back().colour;
+}
+
+sf::Color blendColours(const sf::Color& base, const sf::Color& overlay, float alpha) {
+    alpha = std::clamp(alpha, 0.0f, 1.0f);
+    return sf::Color(
+		static_cast<uint8_t>(base.r + alpha * (overlay.r - base.r)),
+		static_cast<uint8_t>(base.g + alpha * (overlay.g - base.g)),
+		static_cast<uint8_t>(base.b + alpha * (overlay.b - base.b)),
+		static_cast<uint8_t>(base.a + alpha * (overlay.a - base.a))
+	);
+}
+
+void Grid::rebuildVertices(float tempBlend) {
 	for (int y = 0; y < height; ++y) {
 		for (int x = 0; x < width; ++x) {
 			int idx = y * width + x;
@@ -132,9 +179,16 @@ void Grid::rebuildVertices() {
 			vertices[i + 4].position = sf::Vector2f((x + 1) * scale + uiOffset, (y + 1) * scale);
 			vertices[i + 5].position = sf::Vector2f(x * scale + uiOffset, (y + 1) * scale);
 
-			sf::Color c = Utility::scaleColor(cells[idx].element.colour, cells[idx].colourVariation);
+			sf::Color cReal = Utility::scaleColour(cells[idx].element.colour, cells[idx].colourVariation);
+			sf::Color cTemp = temperatureColour(cells[idx].temperature);
+
+			if (cells[idx].element == Elements::VOID)
+				cTemp = sf::Color::Black;
+
+			sf::Color blended = blendColours(cReal, cTemp, tempBlend);
 			for (int j = 0; j < 6; ++j)
-				vertices[i + j].color = c;
+				vertices[i + j].color = blended;
+
 		}
 	}
 	dirty = false;

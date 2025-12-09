@@ -25,21 +25,23 @@ namespace Utility {
 		return window;
 	}
 
-	void updateFPS(sf::RenderWindow& window, sf::Clock& fpsClock,  float& timeAccumulator, int& frameCounter, float dt) {
+	int updateFPS(sf::RenderWindow& window, sf::Clock& fpsClock,  float& timeAccumulator, int& frameCounter, float dt, float simSpeed) {
 		timeAccumulator += dt;
 		frameCounter++;
 
+		int fps = static_cast<int>(frameCounter / timeAccumulator);
 		if (fpsClock.getElapsedTime().asSeconds() >= 0.5f) {
-			window.setTitle("Particle Simulator - FPS: " + std::to_string(static_cast<int>(frameCounter / timeAccumulator)));
+			window.setTitle("Particle Simulator - UPS: " + std::to_string(static_cast<int>(fps * simSpeed)));
 			fpsClock.restart();
 			timeAccumulator = 0.0f;
 			frameCounter = 0;
 		}
+		return fps;
 	}
 
-	void drawGui(sf::RenderWindow& window, Grid& grid, Element& selectedElement, float& simSpeed, bool& isPaused) {
+	void drawGui(sf::RenderWindow& window, Grid& grid, Element& selectedElement, float& simSpeed, float& tempBlend, bool& isPaused) {
 		float dt = deltaClock.restart().asSeconds();
-		updateFPS(window, fpsClock, timeAccumulator, frameCounter, dt);
+		float currentFPS = updateFPS(window, fpsClock, timeAccumulator, frameCounter, dt, simSpeed);
 		ImGui::SFML::Update(window, sf::seconds(dt));
 
 		if (firstFrame) {
@@ -64,21 +66,30 @@ namespace Utility {
 			ImGui::EndCombo();
 		}
 
-		ImGui::PushStyleColor(ImGuiCol_Button, isPaused ? ImVec4(0.8f, 0.1f, 0.1f, 1.0f)
-														 : ImVec4(0.1f, 0.8f, 0.1f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_Button, isPaused
+			? ImVec4(0.8f, 0.1f, 0.1f, 1.0f)
+			: ImVec4(0.1f, 0.8f, 0.1f, 1.0f));
 		if (ImGui::Button(isPaused ? "Paused" : "Playing"))
 			isPaused = !isPaused;
 		ImGui::PopStyleColor();
-
-		ImGui::SliderFloat("Speed", &simSpeed, 0.1f, 3.0f, "%.1fx");
 
 		ImGui::BeginDisabled(!isPaused);
 		if (ImGui::Button("Step"))
 			Simulation::step(grid);
 		ImGui::EndDisabled();
 
+		ImGui::SliderFloat("Speed", &simSpeed, 0.1f, 5.0f, "%.1fx");
+
+		ImGui::SliderFloat("Temp view %", &tempBlend, 0.0f, 1.0f, "%.2fx");
+
 		if (ImGui::Button("Clear"))
 			grid.clear();
+
+		if (currentFPS < 0.75f * 200.0f) { // need a way to dynamically get monitor refresh rate
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.2f, 0.2f, 1.0f));
+			ImGui::Text("Warning: FPS is below 75%% of target!");
+			ImGui::PopStyleColor();
+		}
 
 		ImGui::End();
 	}
@@ -127,11 +138,11 @@ namespace Utility {
 		return result;
 	}
 
-	sf::Color scaleColor(const sf::Color& color, float factor) {
+	sf::Color scaleColour(const sf::Color& colour, float factor) {
 		return sf::Color{
-			static_cast<uint8_t>(std::clamp(int(color.r * factor), 0, 255)),
-			static_cast<uint8_t>(std::clamp(int(color.g * factor), 0, 255)),
-			static_cast<uint8_t>(std::clamp(int(color.b * factor), 0, 255))
+			static_cast<uint8_t>(std::clamp(int(colour.r * factor), 0, 255)),
+			static_cast<uint8_t>(std::clamp(int(colour.g * factor), 0, 255)),
+			static_cast<uint8_t>(std::clamp(int(colour.b * factor), 0, 255))
 		};
 	}
 }

@@ -15,10 +15,11 @@ struct Grid {
 	std::vector<Cell> cells;
 	sf::VertexArray vertices;
 	bool dirty;
+	float oldTempOpacity;
 
 	Grid(int width, int height, int scale, int uiOffset);
 
-	void draw(sf::RenderWindow& window);
+	void draw(sf::RenderWindow& window, float tempBlend);
 	void clear();
 	Cell getCell(int x, int y);
 	Cell& getCellRef(int x, int y);
@@ -27,5 +28,5 @@ struct Grid {
 	void setCell(int x, int y, Cell cell);
 	void swapCells(int x0, int y0, int x1, int y1);
 	void drawLine(int x0, int y0, int x1, int y1, const Element& element);
-	void rebuildVertices();
+	void rebuildVertices(float tempBlend);
 };

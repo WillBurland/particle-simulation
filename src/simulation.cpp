@@ -68,7 +68,7 @@ namespace Simulation {
 				if (current.element == Elements::VOID)
 					continue;
 
-				float ambientTransfer = 1e-3f;
+				float ambientTransfer = 1e-5f;
 				float elementTransfer = 1e-1f;
 
 				float delta = 0.0f;

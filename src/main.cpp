@@ -19,6 +19,7 @@ int main() {
 
 	float speedAccumulator = 0.0f;
 	float simSpeed = 1.0f;
+	float tempBlend = 0.0f;
 	bool isPaused = false;
 
 	while (window.isOpen()) {
@@ -31,7 +32,7 @@ int main() {
 
 		Utility::handleInput(grid, prevMouse, selectedElement, window);
 
-		Utility::drawGui(window, grid, selectedElement, simSpeed, isPaused);
+		Utility::drawGui(window, grid, selectedElement, simSpeed, tempBlend, isPaused);
 
 		if (!isPaused) {
 			speedAccumulator += simSpeed;
@@ -42,7 +43,7 @@ int main() {
 		}
 
 		window.clear(sf::Color(32, 32, 32));
-		grid.draw(window);
+		grid.draw(window, tempBlend);
 		ImGui::SFML::Render(window);
 		window.display();
 	}
