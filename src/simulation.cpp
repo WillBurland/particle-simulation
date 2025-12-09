@@ -8,6 +8,8 @@
 #include <cstdlib>
 
 namespace Simulation {
+	bool currentFrameFlag = false;
+
 	MoveOptions evaluateMoves(const Cell& current, const std::array<std::array<Cell*, 3>, 3>& n) {
 		MoveOptions out{};
 		const int (&rules)[3][3] = current.element.state.moves;
@@ -58,18 +60,22 @@ namespace Simulation {
 	}
 
 	void step(Grid& grid) {
-		for (int y = grid.height - 2; y >= 0; y--) {
+		for (int y = grid.height - 1; y >= 0; y--) {
 			std::vector<int> order = Utility::randomIntArray(grid.width);
 			for (int _x = 0; _x < grid.width; _x++) {
 				int x = order.at(_x);
 				Cell& current = grid.getCellRef(x, y);
-				if (current.element == Elements::VOID)
+				if (current.element == Elements::VOID || current.updatedFlag == currentFrameFlag)
 					continue;
+
+				current.updatedFlag = currentFrameFlag;
 
 				int dx, dy;
 				if (pickHighestPriorityMove(evaluateMoves(current, grid.getNeighbourhood(x, y)), dx, dy))
 					grid.swapCells(x, y, x + dx, y + dy);
 			}
 		}
+
+		currentFrameFlag = !currentFrameFlag;
 	}
 }

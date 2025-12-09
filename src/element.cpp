@@ -1,7 +1,7 @@
 #include "element.hpp"
 
 const std::vector<Element>& Elements::all() {
-	static const std::vector<Element> elems = { VOID, SAND, STONE, WATER, LAVA };
+	static const std::vector<Element> elems = { VOID, SAND, STONE, WATER, LAVA, STEAM };
 	return elems;
 }
 

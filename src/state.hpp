@@ -21,6 +21,6 @@ struct States {
 	static inline const State GAS = { "Gas", {
 		{ 1, 1, 1 },
 		{ 1, 1, 1 },
-		{ 1, 1, 1 }
+		{ 1, 0, 1 }
 	}};
 };

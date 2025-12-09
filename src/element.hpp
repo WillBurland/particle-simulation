@@ -24,6 +24,7 @@ struct Elements {
 	static inline const Element STONE = { 2, "Stone", sf::Color(128, 128, 128), States::SOLID,  2.0f };
 	static inline const Element WATER = { 3, "Water", sf::Color( 64,  64, 255), States::LIQUID, 0.5f };
 	static inline const Element LAVA  = { 4, "Lava",  sf::Color(255, 128,  32), States::LIQUID, 0.6f };
+	static inline const Element STEAM = { 5, "Steam", sf::Color(128, 128, 255), States::GAS,    0.1f };
 
 	static const std::vector<Element>& all();
 	static const Element& fromId(int id);
