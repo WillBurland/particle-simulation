@@ -12,5 +12,6 @@ namespace Utility {
 	void drawGui(sf::RenderWindow& window, Grid& grid, Element& selectedElement, float& simSpeed, bool& isPaused);
 	void handleInput(Grid& grid, sf::Vector2i& prevMouse, Element& element, sf::RenderWindow& window);
 	float randomiseColour();
+	std::vector<int> randomIntArray(int n);
 	sf::Color scaleColor(const sf::Color& color, float factor);
 }

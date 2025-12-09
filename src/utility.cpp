@@ -118,6 +118,15 @@ namespace Utility {
 		return dis(gen);
 	}
 
+	std::vector<int> randomIntArray(int n) {
+		std::vector<int> result(n);
+		std::iota(result.begin(), result.end(), 0);
+		static std::random_device rd;
+		static std::mt19937 gen(rd());
+		std::shuffle(result.begin(), result.end(), gen);
+		return result;
+	}
+
 	sf::Color scaleColor(const sf::Color& color, float factor) {
 		return sf::Color{
 			static_cast<uint8_t>(std::clamp(int(color.r * factor), 0, 255)),
@@ -125,5 +134,4 @@ namespace Utility {
 			static_cast<uint8_t>(std::clamp(int(color.b * factor), 0, 255))
 		};
 	}
-
 }
