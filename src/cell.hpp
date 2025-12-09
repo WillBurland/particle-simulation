@@ -6,6 +6,7 @@ struct Cell {
 	Element element;
 	int x, y;
 	float colourVariation;
+	float temperature;
 	bool updatedFlag;
 
 	Cell();
