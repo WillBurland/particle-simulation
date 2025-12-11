@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -Isrc -I./include
+CXXFLAGS = -std=c++17 -O2 -Wall -Wextra -Isrc -I./include
 
 LIBS = \
 	-L./lib \
